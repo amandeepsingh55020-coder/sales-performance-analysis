@@ -144,7 +144,3 @@ jupyter notebook notebooks/sales_analysis.ipynb
 
 ---
 
-## 👤 Author
-
-**Your Name**  
-[LinkedIn](https://linkedin.com/in/your-profile) · [GitHub](https://github.com/your-username)
