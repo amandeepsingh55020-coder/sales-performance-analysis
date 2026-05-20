@@ -1,13 +1,4 @@
-"""
-analysis.py
-End-to-end sales data analysis:
-  1. Load & clean raw tables
-  2. Merge into master DataFrame
-  3. Engineer business metrics
-  4. EDA — revenue / profit / margin by product, customer, channel, region
-  5. Monthly trend analysis
-  6. Export processed data + charts
-"""
+
 
 import os, warnings
 import pandas as pd
@@ -20,7 +11,7 @@ import seaborn as sns
 
 warnings.filterwarnings("ignore")
 
-# ── Paths ──────────────────────────────────────────────────────────────────────
+
 BASE   = os.path.dirname(os.path.abspath(__file__)) + "/.."
 RAW    = f"{BASE}/data/raw"
 PROC   = f"{BASE}/data/processed"
@@ -28,7 +19,7 @@ IMGDIR = f"{BASE}/images"
 os.makedirs(PROC,   exist_ok=True)
 os.makedirs(IMGDIR, exist_ok=True)
 
-# ── Styling ────────────────────────────────────────────────────────────────────
+
 PALETTE  = ["#2563EB","#7C3AED","#059669","#DC2626","#D97706",
             "#0891B2","#DB2777","#65A30D","#EA580C","#4F46E5"]
 BG       = "#F8FAFC"
@@ -47,17 +38,16 @@ def save(fig, name):
     path = f"{IMGDIR}/{name}.png"
     fig.savefig(path, dpi=150, bbox_inches="tight", facecolor=BG)
     plt.close(fig)
-    print(f"  📊  Saved: {name}.png")
+    print(f"    Saved: {name}.png")
 
 def fmt_inr(x, pos=None):
     if x >= 1e6: return f"₹{x/1e6:.1f}M"
     if x >= 1e3: return f"₹{x/1e3:.0f}K"
     return f"₹{x:.0f}"
 
-# ══════════════════════════════════════════════════════════════════════════════
 # 1 ── LOAD & CLEAN
-# ══════════════════════════════════════════════════════════════════════════════
-print("\n📂  Loading data …")
+
+print("\n Loading data …")
 orders_df    = pd.read_csv(f"{RAW}/orders.csv",    parse_dates=["order_date"])
 products_df  = pd.read_csv(f"{RAW}/products.csv")
 customers_df = pd.read_csv(f"{RAW}/customers.csv")
@@ -69,16 +59,14 @@ orders_df["discount"] = orders_df["discount"].clip(0, 0.50)
 
 print(f"   Orders: {len(orders_df):,} rows  | nulls: {orders_df.isnull().sum().sum()}")
 
-# ══════════════════════════════════════════════════════════════════════════════
 # 2 ── MERGE
-# ══════════════════════════════════════════════════════════════════════════════
+
 df = (orders_df
       .merge(products_df,  on="product_id",  how="left")
       .merge(customers_df, on="customer_id", how="left"))
 
-# ══════════════════════════════════════════════════════════════════════════════
 # 3 ── FEATURE ENGINEERING
-# ══════════════════════════════════════════════════════════════════════════════
+
 df["profit_margin_pct"] = (df["profit"] / df["revenue"].replace(0, np.nan) * 100).round(2)
 df["avg_order_value"]   = df["revenue"] / df["quantity"]
 df["year"]              = df["order_date"].dt.year
@@ -88,11 +76,10 @@ df["year_month"]        = df["order_date"].dt.to_period("M")
 
 # Save processed
 df.to_csv(f"{PROC}/master_sales.csv", index=False)
-print(f"   ✅  Master dataset: {df.shape[0]:,} rows × {df.shape[1]} cols\n")
+print(f"     Master dataset: {df.shape[0]:,} rows × {df.shape[1]} cols\n")
 
-# ══════════════════════════════════════════════════════════════════════════════
 # 4 ── KPI SUMMARY
-# ══════════════════════════════════════════════════════════════════════════════
+
 total_rev    = df["revenue"].sum()
 total_profit = df["profit"].sum()
 avg_margin   = df["profit_margin_pct"].mean()
@@ -100,7 +87,7 @@ total_orders = df["order_id"].nunique()
 aov          = df["revenue"].sum() / total_orders
 
 print("═" * 50)
-print("📈  KPI SUMMARY")
+print("  KPI SUMMARY")
 print("═" * 50)
 print(f"   Total Revenue  : {fmt_inr(total_rev)}")
 print(f"   Total Profit   : {fmt_inr(total_profit)}")
@@ -116,9 +103,9 @@ kpis = pd.DataFrame({
 })
 kpis.to_csv(f"{PROC}/kpi_summary.csv", index=False)
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 5 ── CHART 1: Monthly Revenue & Profit Trend
-# ══════════════════════════════════════════════════════════════════════════════
+
 monthly = (df.groupby("year_month")[["revenue","profit"]]
              .sum().reset_index())
 monthly["year_month_str"] = monthly["year_month"].astype(str)
@@ -139,9 +126,9 @@ ax.set_xlabel("Month"); ax.set_ylabel("Amount (₹)")
 ax.legend(framealpha=0.9)
 save(fig, "01_monthly_trend")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 6 ── CHART 2: Revenue by Category
-# ══════════════════════════════════════════════════════════════════════════════
+
 cat_rev = (df.groupby("category")[["revenue","profit"]]
              .sum().sort_values("revenue", ascending=True))
 cat_rev.to_csv(f"{PROC}/revenue_by_category.csv")
@@ -159,9 +146,9 @@ for ax, col, color, title in zip(
 fig.tight_layout()
 save(fig, "02_revenue_profit_by_category")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 7 ── CHART 3: Revenue & Profit by Region
-# ══════════════════════════════════════════════════════════════════════════════
+
 region = df.groupby("region")[["revenue","profit"]].sum().reset_index()
 region["margin"] = (region["profit"] / region["revenue"] * 100).round(1)
 region.to_csv(f"{PROC}/region_analysis.csv", index=False)
@@ -180,9 +167,9 @@ ax.set_title("Revenue & Profit by Region  (% = Profit Margin)")
 ax.legend(framealpha=0.9)
 save(fig, "03_region_analysis")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 8 ── CHART 4: Sales Channel Mix
-# ══════════════════════════════════════════════════════════════════════════════
+
 channel = df.groupby("channel")[["revenue","profit"]].sum().reset_index().sort_values("revenue", ascending=False)
 channel.to_csv(f"{PROC}/channel_analysis.csv", index=False)
 
@@ -202,9 +189,9 @@ axes[1].set_xlabel(""); axes[1].set_ylabel("Profit (₹)")
 fig.tight_layout()
 save(fig, "04_channel_analysis")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 9 ── CHART 5: Top 10 Products by Revenue
-# ══════════════════════════════════════════════════════════════════════════════
+
 prod = (df.groupby("product_name")[["revenue","profit"]]
           .sum().sort_values("revenue", ascending=False).head(10))
 prod["margin"] = (prod["profit"] / prod["revenue"] * 100).round(1)
@@ -222,9 +209,9 @@ ax.set_xlabel("Product"); ax.set_ylabel("Revenue (₹)")
 plt.xticks(rotation=30, ha="right")
 save(fig, "05_top_products")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 10 ── CHART 6: Top 15 Customers by Revenue (RFM proxy)
-# ══════════════════════════════════════════════════════════════════════════════
+
 cust = (df.groupby("customer_name").agg(
     revenue=("revenue","sum"), profit=("profit","sum"),
     orders=("order_id","nunique")).sort_values("revenue", ascending=False).head(15))
@@ -241,9 +228,9 @@ ax.set_title("Top 15 Customers by Revenue")
 ax.set_xlabel("Revenue (₹)")
 save(fig, "06_top_customers")
 
-# ══════════════════════════════════════════════════════════════════════════════
+
 # 11 ── CHART 7: Profit Margin Distribution
-# ══════════════════════════════════════════════════════════════════════════════
+
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
 axes[0].hist(df["profit_margin_pct"].dropna(), bins=40, color=PALETTE[1],
              alpha=0.8, edgecolor="white")
@@ -264,9 +251,8 @@ axes[1].set_ylabel("Margin %")
 fig.tight_layout()
 save(fig, "07_margin_analysis")
 
-# ══════════════════════════════════════════════════════════════════════════════
 # 12 ── CHART 8: Year-over-Year Comparison
-# ══════════════════════════════════════════════════════════════════════════════
+
 yoy = df.groupby(["year","month"])[["revenue","profit"]].sum().reset_index()
 months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 yoy["month_name"] = yoy["month"].apply(lambda x: months[x-1])
@@ -282,6 +268,6 @@ ax.set_xlabel("Month"); ax.set_ylabel("Revenue (₹)")
 ax.legend(title="Year", framealpha=0.9)
 save(fig, "08_yoy_comparison")
 
-print("\n✅  All charts saved to /images/")
-print("✅  Processed data saved to /data/processed/")
-print("\n🎉  Analysis complete!\n")
+print("\n  All charts saved to /images/")
+print("  Processed data saved to /data/processed/")
+print("\n  Analysis complete!\n")
