@@ -1,10 +1,10 @@
-# 📊 Sales Performance Analysis
+#  Sales Performance Analysis
 
 > End-to-end sales data analysis using Python — uncovering revenue & profit drivers across products, customers, channels, and regions.
 
 ---
 
-## 🗂 Project Structure
+##  Project Structure
 
 ```
 sales-performance-analysis/
@@ -27,13 +27,13 @@ sales-performance-analysis/
 
 ---
 
-## 🎯 Problem Statement
+##  Problem Statement
 
 A sales team needs visibility into **what's driving revenue and profit** across 3 years of transactions. The goal: identify top-performing products, high-value customers, and underperforming regions to support data-driven decisions.
 
 ---
 
-## 📦 Dataset Overview
+##  Dataset Overview
 
 | Table | Rows | Description |
 |---|---|---|
@@ -43,7 +43,7 @@ A sales team needs visibility into **what's driving revenue and profit** across 
 
 ---
 
-## ⚙️ What Was Done
+##  What Was Done
 
 ### 1. Data Cleaning & Merging
 - Handled nulls, clipped invalid quantities & discounts
@@ -65,7 +65,7 @@ A sales team needs visibility into **what's driving revenue and profit** across 
 
 ---
 
-## 📈 Key KPIs
+##  Key KPIs
 
 | KPI | Value |
 |---|---|
@@ -77,7 +77,7 @@ A sales team needs visibility into **what's driving revenue and profit** across 
 
 ---
 
-## 💡 Key Insights
+##  Key Insights
 
 1. **Electronics** generates the highest revenue; **Clothing** has the best profit margin
 2. **North region** leads in revenue — **Central region** consistently underperforms
@@ -87,7 +87,7 @@ A sales team needs visibility into **what's driving revenue and profit** across 
 
 ---
 
-## 📊 Visualizations
+##  Visualizations
 
 | Chart | Description |
 |---|---|
@@ -102,7 +102,7 @@ A sales team needs visibility into **what's driving revenue and profit** across 
 
 ---
 
-## 🖥 Power BI Dashboard
+##  Power BI Dashboard
 
 The analyzed data (`data/processed/master_sales.csv`) powers an interactive Power BI dashboard featuring:
 - **KPI Cards** — Revenue, Profit, Margin, Orders
@@ -112,7 +112,7 @@ The analyzed data (`data/processed/master_sales.csv`) powers an interactive Powe
 
 ---
 
-## 🚀 How to Run
+##  How to Run
 
 ```bash
 # 1. Clone the repo
