@@ -1,7 +1,5 @@
-"""
-generate_data.py
-Generates realistic synthetic sales dataset (multi-table) for analysis.
-"""
+
+#Generates realistic synthetic sales dataset (multi-table) for analysis.
 
 import pandas as pd
 import numpy as np
@@ -9,7 +7,6 @@ import os
 
 np.random.seed(42)
 
-# ── Config ────────────────────────────────────────────────────────────────────
 N_ORDERS = 5000
 START_DATE = "2022-01-01"
 END_DATE   = "2024-12-31"
@@ -23,7 +20,7 @@ CATEGORIES = {
     "Food & Bev":  ["Coffee Beans", "Energy Drink", "Protein Bar", "Tea Pack", "Juice"],
 }
 
-# ── Products Table ─────────────────────────────────────────────────────────────
+# Products Table 
 products = []
 pid = 1
 for cat, items in CATEGORIES.items():
@@ -41,7 +38,7 @@ for cat, items in CATEGORIES.items():
 
 products_df = pd.DataFrame(products)
 
-# ── Customers Table ────────────────────────────────────────────────────────────
+#  Customers Table
 first_names = ["Aarav","Priya","Rahul","Sneha","Vikram","Anjali","Rohan","Nisha",
                "Arjun","Pooja","Karan","Meera","Dev","Riya","Siddharth","Ananya"]
 last_names  = ["Sharma","Patel","Gupta","Singh","Kumar","Joshi","Mehta","Verma",
@@ -60,7 +57,7 @@ for i in range(1, 501):
 
 customers_df = pd.DataFrame(customers)
 
-# ── Orders Table ───────────────────────────────────────────────────────────────
+#  Orders Tabl
 dates = pd.date_range(START_DATE, END_DATE, freq="D")
 
 orders = []
@@ -91,7 +88,7 @@ for i in range(1, N_ORDERS + 1):
 
 orders_df = pd.DataFrame(orders).sort_values("order_date").reset_index(drop=True)
 
-# ── Save ───────────────────────────────────────────────────────────────────────
+#  Save 
 out = os.path.join(os.path.dirname(__file__), "..", "data", "raw")
 os.makedirs(out, exist_ok=True)
 
@@ -99,5 +96,5 @@ products_df.to_csv(f"{out}/products.csv",   index=False)
 customers_df.to_csv(f"{out}/customers.csv", index=False)
 orders_df.to_csv(f"{out}/orders.csv",       index=False)
 
-print(f"✅  Generated {len(orders_df)} orders | {len(customers_df)} customers | {len(products_df)} products")
+print(f"  Generated {len(orders_df)} orders | {len(customers_df)} customers | {len(products_df)} products")
 print(f"    Saved to {os.path.abspath(out)}")
